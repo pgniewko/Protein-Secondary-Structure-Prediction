@@ -52,24 +52,25 @@ def prepare_db(cb513_path, db_ofile, db_classes, wsize, alphabet):
                     fo1.write(s1)
                     fo2.write(s2)
 
-
-                    #print s1
-                    #print s2
-                    #print ss_file, " OK"
-                    #prot._aa_substring(10,8)#,map_dssp_3codes) 
-
-
     fo1.close()
     fo2.close()
 
 
 if __name__ == "__main__":
     cb513_path = '../data/CB513'
-    #cb513_path = '../data/cbtest'
-    db_ofile        = "../data/db/aa_w7_a3.dat"
     classes_ofile   = "../data/db/ss_a3.dat" 
-                    
-    alphabet = map_dssp_3codes 
-    pubs_data = prepare_db(cb513_path, db_ofile, classes_ofile, 5, alphabet)
+    
+    window_width = int( sys.argv[1] )
+    db_ofile = "../data/db/aa_w" + window_width + "_a3.dat"
+    
+    if sys.argv[2] == 3:
+        alphabet = map_dssp_3codes 
+    elif sys.argv[2] == 8:
+        alphabet = map_dssp_3codes
+    else:
+        print "Alphabet not recognized: choose between 3 or 8"
+        sys.ecit(1)
+
+    pubs_data = prepare_db(cb513_path, db_ofile, classes_ofile, window_width, alphabet)
 
 
