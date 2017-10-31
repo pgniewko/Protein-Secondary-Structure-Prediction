@@ -61,15 +61,15 @@ if __name__ == "__main__":
     classes_ofile   = "../data/db/ss_a3.dat" 
     
     window_width = int( sys.argv[1] )
-    db_ofile = "../data/db/aa_w" + window_width + "_a3.dat"
+    db_ofile = "../data/db/aa_w" + str(window_width) + "_a3.dat"
     
-    if sys.argv[2] == 3:
+    if sys.argv[2] == "3":
         alphabet = map_dssp_3codes 
-    elif sys.argv[2] == 8:
+    elif sys.argv[2] == "8":
         alphabet = map_dssp_3codes
     else:
         print "Alphabet not recognized: choose between 3 or 8"
-        sys.ecit(1)
+        sys.exit(1)
 
     pubs_data = prepare_db(cb513_path, db_ofile, classes_ofile, window_width, alphabet)
 

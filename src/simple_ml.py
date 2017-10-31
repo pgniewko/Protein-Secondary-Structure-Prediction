@@ -1,56 +1,181 @@
 #! /usr/bin/env python
 
 import sys
+import itertools
 import numpy as np
+from scipy import interp
+import matplotlib.pyplot as plt
+from itertools import cycle
 
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.linear_model import SGDClassifier
-from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import confusion_matrix
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import GaussianNB
+from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.ensemble import VotingClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 
 from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold
+
+from sklearn import svm
 
 
-X = np.loadtxt("aa_w3_a3.dat")
-Y = np.loadtxt("ss_a3.dat")
+def plot_ROC_for_clf(clf, X, Y, cv_fold=5):
+    n_classes = len(set(Y))
+    Y_bin = []
+    for cl in set(Y):
+        arr_ = []
+        for el in Y:
+            if el == cl:
+                arr_.append(1)
+            else:
+                arr_.append(0)
+        Y_bin.append( np.array( arr_ ) )
 
-clf = svm.SVC()
-scores = cross_val_score(clf, X, Y)
-print scores.mean()
+    cv = StratifiedKFold(n_splits=cv_fold)
 
-clf = AdaBoostClassifier(n_estimators=100)
-scores = cross_val_score(clf, X, Y)
-print scores.mean()
+    fig, ax = plt.subplots(figsize=(7,7))
+    for class_idx in range(n_classes):
+        class_array = np.array([])
+        class_probs = np.array([])
 
-clf = GradientBoostingClassifier(n_estimators=100, learning_rate=1.0,max_depth=1, random_state=0)
-scores = cross_val_score(clf, X, Y)
-print scores.mean()
+        for train, test in cv.split(X, Y_bin[class_idx]):
+            probas_ = clf.fit(X[train], Y_bin[class_idx][train]).predict_proba(X[test])
 
-clf = SGDClassifier(loss="hinge", penalty="l2")
-scores = cross_val_score(clf, X, Y)
-print scores.mean()
+            class_array = np.concatenate( ( class_array, Y_bin[class_idx][test]), axis=0)           
+            class_probs = np.concatenate( ( class_probs, probas_[:,1]), axis=0) 
+
+        fpr, tpr, thresholds = roc_curve(class_array, class_probs)
+        roc_auc = auc(fpr, tpr)
+        plt.plot(fpr, tpr, lw=2, alpha=0.6, label='ROC for class %d (AUC = %0.2f)' % (class_idx, roc_auc))
+
+    
+    plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r',label='Random', alpha=.8)
+    
+    plt.rcParams['xtick.labelsize'] = 10
+    plt.rcParams['ytick.labelsize'] = 10
+    plt.xlim([-0.05, 1.05])
+    plt.ylim([-0.05, 1.05])
+    plt.xlabel('False Positive Rate', fontsize=20)
+    plt.ylabel('True Positive Rate', fontsize=20)
+    plt.title('Receiver operating characteristic', fontsize=25)
+    plt.legend(loc="lower right", fontsize=15)
+    plt.show()
 
 
-clf = GaussianNB()
-scores = cross_val_score(clf, X, Y)
-print scores.mean()
+def plot_confusion_matrix(cm, classes,
+                          normalize=False,
+                          title='Confusion matrix',
+                          cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
 
-clf1 = LogisticRegression(random_state=1)
-clf2 = RandomForestClassifier(random_state=1)
-clf3 = GaussianNB()
-eclf = VotingClassifier(estimators=[('lr', clf1), ('rf', clf2), ('gnb', clf3)], voting='hard')
+    print(cm)
+
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
 
 
-for clf, label in zip([clf1, clf2, clf3, eclf], ['Logistic Regression', 'Random Forest', 'naive Bayes', 'Ensemble']):
+## Read the data
+X = np.loadtxt("../data/db/aa_w10_a3.dat")
+Y = np.loadtxt("../data/db/ss_a3.dat")
+
+
+###  Baseline
+clf = DummyClassifier(strategy="stratified")
+scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
+print( "Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(), "Dummy (stratified)") )
+
+clf = DummyClassifier(strategy="uniform")
+scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
+print( "Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(), "Dummy (uniform)") )
+
+
+## Random Forest
+clf = RandomForestClassifier(random_state=1)
+clf.fit(X, Y)
+Y_pred = clf.predict(X)
+
+print( "Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (np.mean(Y_pred == Y), np.std(Y_pred == Y), "RandomForestClassifier*") )
+
+clf = RandomForestClassifier(random_state=1)
+scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
+print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(),"RandomForestClassifier: CV=5, max_depth=None"))
+
+clf = RandomForestClassifier(random_state=1, max_depth=10)
+scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
+print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(),"RandomForestClassifier: CV=5, max_depth=10"))
+
+
+clf1 = DecisionTreeClassifier(max_depth=5)
+clf2 = RandomForestClassifier(random_state=1, max_depth=10)
+clf3 = MultinomialNB(alpha=2.0)
+clf4 = LogisticRegression()
+eclf = VotingClassifier(estimators=[('dt', clf1), ('rf', clf2), ('mnb', clf3), ('lr', clf4)], voting='hard')
+
+
+for clf, label in zip([clf1, clf2, clf3, clf4, eclf], ['Decision Tree', 'Random Forest', 'naive Bayes', 'Logistic Regression', 'Ensemble']):
     scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
     print("Accuracy: %0.2f (+/- %0.2f) [%s]" % (scores.mean(), scores.std(), label))
 
+
+plot_flag=False
+if plot_flag:
+    plot_ROC_for_clf( RandomForestClassifier(random_state=1, max_depth=10), X, Y, cv_fold=5)
+
+
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, random_state=0)
+    Y_pred = eclf.fit(X_train, Y_train).predict(X_test)
+
+# Compute confusion matrix
+    cnf_matrix = confusion_matrix(Y_test, Y_pred)
+    np.set_printoptions(precision=2)
+
+# Plot non-normalized confusion matrix
+    plt.figure()
+    plot_confusion_matrix(cnf_matrix, classes=['H','E','C'],
+                      title='Confusion matrix, without normalization')
+
+# Plot normalized confusion matrix
+    plt.figure()
+    plot_confusion_matrix(cnf_matrix, classes=['H','E','C'], normalize=True,
+                      title='Normalized confusion matrix')
+
+
+
+clf = svm.SVC(kernel="linear", C=0.025)
+scores = cross_val_score(clf, X, Y, cv=5)
+print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(),"SVC(kernel=linear, C=0.025): CV=5"))
+
+clf = svm.SVC(kernel="rbf", gamma=2, C=1)
+scores = cross_val_score(clf, X, Y, cv=5)
+print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(),"SVC(gamma=2, C=1): CV=5"))
 
 
 
