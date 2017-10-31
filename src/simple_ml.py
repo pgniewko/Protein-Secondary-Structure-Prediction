@@ -5,7 +5,6 @@ import itertools
 import numpy as np
 from scipy import interp
 import matplotlib.pyplot as plt
-from itertools import cycle
 
 from sklearn.metrics import roc_curve, auc
 from sklearn.metrics import confusion_matrix
@@ -38,7 +37,6 @@ def plot_ROC_for_clf(clf, X, Y, cv_fold=5):
 
     cv = StratifiedKFold(n_splits=cv_fold)
 
-    fig, ax = plt.subplots(figsize=(7,7))
     for class_idx in range(n_classes):
         class_array = np.array([])
         class_probs = np.array([])
@@ -64,7 +62,6 @@ def plot_ROC_for_clf(clf, X, Y, cv_fold=5):
     plt.ylabel('True Positive Rate', fontsize=20)
     plt.title('Receiver operating characteristic', fontsize=25)
     plt.legend(loc="lower right", fontsize=15)
-    plt.show()
 
 
 def plot_confusion_matrix(cm, classes,
@@ -147,8 +144,8 @@ for clf, label in zip([clf1, clf2, clf3, clf4, eclf], ['Decision Tree', 'Random 
 
 plot_flag=False
 if plot_flag:
+    plt.figure( figsize=(7,7) )
     plot_ROC_for_clf( RandomForestClassifier(random_state=1, max_depth=10), X, Y, cv_fold=5)
-
 
     X_train, X_test, Y_train, Y_test = train_test_split(X, Y, random_state=0)
     Y_pred = eclf.fit(X_train, Y_train).predict(X_test)
@@ -167,6 +164,7 @@ if plot_flag:
     plot_confusion_matrix(cnf_matrix, classes=['H','E','C'], normalize=True,
                       title='Normalized confusion matrix')
 
+    plt.show()
 
 
 clf = svm.SVC(kernel="linear", C=0.025)
