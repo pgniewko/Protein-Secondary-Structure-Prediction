@@ -1,5 +1,6 @@
 #! /usr/bin/env python
-# Author PG
+# BioE 134, Fall 2017
+# Author Pawel Gniewek (pawel.gniewek@berkeley.edu)
 # License: BSD
 #
 # Usage: ./calc_ss_consistency.py
