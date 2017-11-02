@@ -2,14 +2,15 @@
 # Author PG
 # License: BSD
 #
+# Usage: ./calc_ss_consistency.py
 
 import os
 import sys
 import numpy as np
 
-map_dssp_3codes   = {"H":1,"I":1,"G":1,"E":2,"B":2,"T":3,"S":3, "_":3, "?":3}
-map_stride_3codes = {"H":1,"I":1,"G":1,"E":2,"B":2,"T":3,"C":3, "?":3}
-map_define_3codes = {"H":1,"G":1,"E":2,"_":3,"S":3,"?":3}
+dssp_3_alphabet   = {"H":1,"I":1,"G":1,"E":2,"B":2,"T":3,"S":3, "_":3, "?":3}
+stride_3_alphabet = {"H":1,"I":1,"G":1,"E":2,"B":2,"T":3,"C":3, "?":3}
+define_3_alphabet = {"H":1,"G":1,"E":2,"_":3,"S":3,"?":3}
 
 def calc_consistency(ss1, ss2, ss3):
     N1 = len(ss1)
@@ -29,19 +30,19 @@ def calc_consistency(ss1, ss2, ss3):
     s = 0.0
     s_total = 0.0
     for i in range(N1):
-        if map_dssp_3codes[ ss1[i] ] == map_stride_3codes[ ss2[i].upper() ]:
+        if dssp_3_alphabet[ ss1[i] ] == stride_3_alphabet[ ss2[i].upper() ]:
             s += 1
     s_total += (s / N1)
 
     s = 0.0
     for i in range(N1):
-        if map_dssp_3codes[ ss1[i] ] == map_define_3codes[ ss3[i] ]:
+        if dssp_3_alphabet[ ss1[i] ] == define_3_alphabet[ ss3[i] ]:
             s += 1
     s_total += (s / N1)
     
     s = 0.0
     for i in range(N1):
-        if map_stride_3codes[ ss2[i].upper() ] == map_define_3codes[ ss3[i] ]:
+        if stride_3_alphabet[ ss2[i].upper() ] == define_3_alphabet[ ss3[i] ]:
             s += 1
     s_total += (s / N1)
 
@@ -77,7 +78,6 @@ def extract_ss(ss_file):
 
 
 def scan_db(cb513_path):
-
     counter = 0
     average = 0.0
 
@@ -92,8 +92,9 @@ def scan_db(cb513_path):
 
     return average / counter
 
+
 if __name__ == "__main__":
     cb513_path = '../data/CB513'
     
     average_consistency = scan_db(cb513_path)
-    print average_consistency
+    print "Average Sec. Str. consistency: %3.2f %%" % (100.0 * average_consistency)
