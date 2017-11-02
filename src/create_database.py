@@ -1,7 +1,10 @@
 #! /usr/bin/env python
-# Author PG
+# BioE 134, Fall 2017
+# Author: Pawel Gniewek (pawel.gniewek@berkeley.edu)
 # License: BSD
 #
+# Use window width = (5*2+1), and three letter alphabet
+# Usage: ./create_database.py 5 3
 
 import os
 import sys
@@ -9,8 +12,8 @@ import numpy as np
 
 from proteinss import ProteinSS
 
-map_dssp_3codes = {"H":1,"I":1,"G":1,"E":2,"B":2,"T":3,"S":3, "_":3, "?":3}
-map_dssp_8codes = {"H":1,"I":2,"G":3,"E":4,"B":5,"T":6,"S":7, "_":8, "?":8}
+map_dssp_3_alphabet = {"H":1,"I":1,"G":1,"E":2,"B":2,"T":3,"S":3, "_":3, "?":3}
+map_dssp_8_alphabet = {"H":1,"I":2,"G":3,"E":4,"B":5,"T":6,"S":7, "_":8, "?":8}
 
 
 def extract_file(ss_file):
@@ -64,9 +67,9 @@ if __name__ == "__main__":
     db_ofile = "../data/db/aa_w" + str(window_width) + "_a3.dat"
     
     if sys.argv[2] == "3":
-        alphabet = map_dssp_3codes 
+        alphabet = map_dssp_3_alphabet
     elif sys.argv[2] == "8":
-        alphabet = map_dssp_3codes
+        alphabet = map_dssp_8_alphabet
     else:
         print "Alphabet not recognized: choose between 3 or 8"
         sys.exit(1)
