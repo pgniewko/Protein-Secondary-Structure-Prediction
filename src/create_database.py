@@ -37,6 +37,12 @@ def extract_file(ss_file):
     return prot
 
 
+###################################################################################
+# A naive way of encoding a protein sequence. 
+# This representation will have a significant impact on the  quality of the results. 
+# It is done(temporarily) this way to give a quick intro into the problem set-up. 
+# Better representation will be implemented in the Part 2 of this tutorial.
+###################################################################################
 def prepare_db(cb513_path, db_ofile, db_classes, wsize, alphabet):
 
     list_ = []
