@@ -121,6 +121,11 @@ if __name__ == "__main__":
     clf = DummyClassifier(strategy="stratified")
     scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
     print( "Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(), "Dummy (stratified)") )
+    
+    clf = DummyClassifier(strategy="stratified")
+    clf.fit(X, Y)
+    Y_pred = clf.predict(X)
+    print( "Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (np.mean(Y_pred == Y), np.std(Y_pred == Y), "DummyClassifier") )
 
     clf = DummyClassifier(strategy="uniform")
     scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
@@ -180,6 +185,7 @@ if __name__ == "__main__":
 
         plt.show()
 
+    sys.exit(1)
 
     clf = SVC(kernel="linear", C=0.025)
     scores = cross_val_score(clf, X, Y, cv=5)
