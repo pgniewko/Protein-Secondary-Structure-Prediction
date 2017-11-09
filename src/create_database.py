@@ -22,17 +22,25 @@ def extract_file(ss_file):
     fi = open(ss_file, 'rU')
     seq_string = ""
     ss_string  = ""
+    alignments = []
     for line in fi:
         if line.startswith("RES:"):
            seq_string = line.split(":")[1].rstrip('\n')
            
         if line.startswith("DSSP:"):
            ss_string = line.split(":")[1].rstrip('\n')
-            
+ 
+        if line.startswith("align"):
+           alignment = line.split(":")[1].rstrip('\n')
+           alignments.append( alignment )
+
     seq_l = seq_string.split(",")[0:-1]
     ss_l  = ss_string.split(",")[0:-1]
 
     prot = ProteinSS(seq_l, ss_l)
+
+    for al_ in alignments:
+        prot.add_alignment(al_)
 
     return prot
 
@@ -56,8 +64,7 @@ def prepare_db(cb513_path, db_ofile, db_classes, wsize, alphabet):
                 ss_file = root + "/" + name
                 prot = extract_file ( ss_file )
                 if prot.is_valid():
-                    s1, s2 = prot.get_db_strings(wsize, map_dssp_3codes)
-             
+                    s1, s2 = prot.get_db_strings(wsize, map_dssp_3_alphabet, True)
                     fo1.write(s1)
                     fo2.write(s2)
 

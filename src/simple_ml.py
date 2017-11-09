@@ -144,10 +144,14 @@ if __name__ == "__main__":
     print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(),"DecisionTreeClassifier: CV=5, max_depth=None"))
 
     # RandomForestClassifier
-    clf = RandomForestClassifier(random_state=1, max_depth=10)
+    clf = RandomForestClassifier(random_state=1, max_depth=50)
     scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
-    print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(),"RandomForestClassifier: CV=5, max_depth=10"))
-
+    print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(),"RandomForestClassifier: CV=5, max_depth=50"))
+    
+    # RandomForestClassifier
+    clf = RandomForestClassifier(random_state=1, max_depth=50, criterion='entropy')
+    scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
+    print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(),"RandomForestClassifier,entropy: CV=5, max_depth=50"))
 
     clf1 = DecisionTreeClassifier(max_depth=5)
     clf2 = RandomForestClassifier(random_state=1, max_depth=10)
@@ -161,7 +165,7 @@ if __name__ == "__main__":
 
 
     plot_flag = True
-    #plot_flag = False
+    plot_flag = False
     if plot_flag:
         plt.figure( figsize=(7,7) )
         plot_ROC_for_clf( RandomForestClassifier(random_state=1, max_depth=10), X, Y, cv_fold=5)

@@ -53,8 +53,6 @@ def calc_consistency(ss1, ss2, ss3):
 
 
 def extract_ss(ss_file):
-    print "Extracting :", ss_file
-
     fi = open(ss_file, 'rU')
     
     ss1 = ""
