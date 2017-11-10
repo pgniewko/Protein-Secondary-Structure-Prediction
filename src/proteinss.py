@@ -1,9 +1,10 @@
 import sys
 import numpy as np
+from sklearn.preprocessing import normalize
 
 SEQ_MAP = {"A":1,"R":2,"N":3,"D":4,"C":5,"Q":6,"E":7,"G":8,"H":9,\
            "I":10,"L":11,"K":12,"M":13,"F":14,"P":15,"S":16,"T":17,\
-           "W":18,"Y":19,"V":20,"B":21,"Z":22,"X":23,"-":24, ".":25}
+           "W":18,"Y":19,"V":20,"B":21,"Z":22,"X":23,"-":24, ".":0}
 
 class ProteinSS:
 
@@ -77,17 +78,23 @@ class ProteinSS:
 
         w_list = self._aa_substring4seq(i, w, self.aa_list) 
 
-        for i, el_ in enumerate(w_list):
-            table_[el_][i] += 1
+        for i_, el_ in enumerate(w_list):
+            table_[el_][i_] += 1
 
-        # TODO
-        # 1. Account for alignments
-        # 2. Normalize in columns
-        
+        for al_ in self.al_list:
+            if len(al_) != len(self.aa_list):
+                continue
+
+            w_list = self._aa_substring4seq(i, w, al_) 
+            for i_, el_ in enumerate(w_list):
+                table_[ el_ ][i_] += 1
+       
+        table_ = normalize(table_, axis=0, norm='l1')
+
         s_ = ""
         for x_ in range(nrows):
             for y_ in range(2*w+1):
-                s_ += str( table_[x_][y_] ) + " "
+                s_ += "%4.3f " % ( table_[x_][y_] )
 
         s_ += "\n"
         return s_

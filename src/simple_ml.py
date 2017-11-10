@@ -20,6 +20,7 @@ from sklearn.dummy import DummyClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import VotingClassifier
 from sklearn.svm import SVC
 
@@ -156,10 +157,11 @@ if __name__ == "__main__":
     clf1 = DecisionTreeClassifier(max_depth=5)
     clf2 = RandomForestClassifier(random_state=1, max_depth=10)
     clf3 = GaussianNB()
-    eclf = VotingClassifier(estimators=[('dt', clf1), ('rf', clf2), ('mnb', clf3)], voting='hard')
+    clf4 = LogisticRegression()
+    eclf = VotingClassifier(estimators=[('dt', clf1), ('rf', clf2), ('mnb', clf3), ('lr', clf4)], voting='hard')
 
-    for clf, label in zip([clf1, clf2, clf3,  eclf], \
-            ['Decision Tree', 'Random Forest', 'Naive Bayes', 'Ensemble']):
+    for clf, label in zip([clf1, clf2, clf3, clf4,  eclf], \
+            ['Decision Tree', 'Random Forest', 'Naive Bayes', 'Logistic Regression', 'Ensemble']):
         scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
         print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(), label))
 

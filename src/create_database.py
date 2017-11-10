@@ -3,7 +3,7 @@
 # Author: Pawel Gniewek (pawel.gniewek@berkeley.edu)
 # License: BSD
 #
-# Use window width = (5*2+1), and three letter alphabet
+# Using: i) window width = (5*2+1), ii) three letter alphabet
 # Usage: ./create_database.py 5 3
 
 import os
@@ -32,7 +32,7 @@ def extract_file(ss_file):
  
         if line.startswith("align"):
            alignment = line.split(":")[1].rstrip('\n')
-           alignments.append( alignment )
+           alignments.append( alignment.split(",")[0:-1] )
 
     seq_l = seq_string.split(",")[0:-1]
     ss_l  = ss_string.split(",")[0:-1]
@@ -45,18 +45,10 @@ def extract_file(ss_file):
     return prot
 
 
-###################################################################################
-# A naive way of encoding a protein sequence. 
-# This representation will have a significant impact on the  quality of the results. 
-# It is done(temporarily) this way to give a quick intro into the problem set-up. 
-# Better representation will be implemented in the Part 2 of this tutorial.
-###################################################################################
 def prepare_db(cb513_path, db_ofile, db_classes, wsize, alphabet):
-
-    list_ = []
-    
     fo1 = open(db_ofile, 'w')
     fo2 = open(db_classes, 'w')
+    list_ = []
     
     for root, dirs, files in os.walk(cb513_path):
         for name in files:
