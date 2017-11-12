@@ -12,7 +12,6 @@ from __future__ import print_function
 import sys
 import numpy as np
 
-#from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 
 from sklearn.model_selection import train_test_split
@@ -25,25 +24,15 @@ if __name__ == "__main__":
 # Read the data
     X = np.loadtxt(sys.argv[1])
     Y = np.loadtxt(sys.argv[2])
-  
+
 
 # Set the parameters by cross-validation
     parameters = [ {'penalty':['l2'], \
     'C':[0.25, 0.5, 0.75, 1.0, 1.5, 2.0], \
-    'max_iter':[100, 200], \
     'solver':['newton-cg', 'lbfgs', 'sag'], \
     'intercept_scaling':[0.5, 1.0, 2.5, 5.0] },\
     {'penalty':['l1'], \
      'C':[0.25, 0.5, 0.75, 1.0, 1.5, 2.0], \
-     'max_iter':[100, 200], \
-     'solver':['liblinear'], \
-     'intercept_scaling':[0.5, 1.0, 2.5, 5.0] } ]
-
-    parameters = [ {'penalty':['l2'], \
-    'C':[ 0.5, 1.0, 2.0], \
-    'intercept_scaling':[0.5, 1.0, 2.5, 5.0] },\
-    {'penalty':['l1'], \
-     'C':[0.5, 1.0, 2.0], \
      'solver':['liblinear'], \
      'intercept_scaling':[0.5, 1.0, 2.5, 5.0] } ]
 
@@ -58,8 +47,8 @@ if __name__ == "__main__":
         print()
 
         clf = GridSearchCV( LogisticRegression() , parameters,\
-                            cv=5, scoring='%s_macro' % score)
-        
+                            cv=2, scoring='%s_macro' % score)
+
         clf.fit(X_train, y_train)
 
         print("Best parameters set found on development set:")
@@ -83,6 +72,5 @@ if __name__ == "__main__":
         y_true, y_pred = y_test, clf.predict(X_test)
         print(classification_report(y_true, y_pred))
         print()
-
 
 

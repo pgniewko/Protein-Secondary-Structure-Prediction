@@ -191,7 +191,7 @@ if __name__ == "__main__":
 
         plt.show()
 
-    sys.exit(1)
+#    sys.exit(1)
 
     clf = SVC(kernel="linear", C=0.025)
     scores = cross_val_score(clf, X, Y, cv=5)
