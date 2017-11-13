@@ -18,6 +18,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report
 
+from sklearn.model_selection import cross_val_score
 
 if __name__ == "__main__":
 
@@ -25,20 +26,15 @@ if __name__ == "__main__":
     X = np.loadtxt(sys.argv[1])
     Y = np.loadtxt(sys.argv[2])
 
-    clf = MLPClassifier(activation='relu',solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(25,11,3), random_state=1, verbose=10)
-    scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
-    print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(), "MLPClassifier: CV=5"))
+#    clf = MLPClassifier(activation='relu',solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(25,11,3), random_state=1, verbose=10)
+#    scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
+#    print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(), "MLPClassifier: CV=5"))
 
-    sys.exit(1)
+#    sys.exit(1)
 # Set the parameters by cross-validation
-    parameters = [ {'penalty':['l2'], \
-    'C':[0.25, 0.5, 0.75, 1.0, 1.5, 2.0], \
-    'solver':['newton-cg', 'lbfgs', 'sag'], \
-    'intercept_scaling':[0.5, 1.0, 2.5, 5.0] },\
-    {'penalty':['l1'], \
-     'C':[0.25, 0.5, 0.75, 1.0, 1.5, 2.0], \
-     'solver':['liblinear'], \
-     'intercept_scaling':[0.5, 1.0, 2.5, 5.0] } ]
+    parameters = [ {'activation':['relu','tanh'],\
+    'solver':['lbfgs','adam'], \
+    'hidden_layer_sizes':[(100,),(50,50),(50,25,3)] } ]
 
 
 # Split the dataset in two equal parts
