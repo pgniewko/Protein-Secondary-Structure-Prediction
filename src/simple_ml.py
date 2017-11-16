@@ -153,6 +153,11 @@ if __name__ == "__main__":
     clf = RandomForestClassifier(random_state=1, max_depth=50, criterion='entropy')
     scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
     print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(),"RandomForestClassifier,entropy: CV=5, max_depth=50"))
+    
+    # Logistic Regression
+    clf = LogisticRegression()
+    scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
+    print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(),"LogisticRegression"))
 
     clf1 = DecisionTreeClassifier(max_depth=5)
     clf2 = RandomForestClassifier(random_state=1, max_depth=10)
