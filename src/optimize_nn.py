@@ -23,14 +23,14 @@ from sklearn.model_selection import cross_val_score
 if __name__ == "__main__":
 
 # Read the data
+
     X = np.loadtxt(sys.argv[1])
     Y = np.loadtxt(sys.argv[2])
 
-#    clf = MLPClassifier(activation='relu',solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(25,11,3), random_state=1, verbose=10)
-#    scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
-#    print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(), "MLPClassifier: CV=5"))
+    clf = MLPClassifier(activation='logistic',solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(25,11,3))
+    scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
+    print("Accuracy: %0.2f (+/- %0.2f) [ %s ]" % (scores.mean(), scores.std(), "MLPClassifier: CV=5"))
 
-#    sys.exit(1)
 # Set the parameters by cross-validation
     parameters = [ {'activation':['logistic','relu','tanh'],\
     'solver':['lbfgs','sgd','adam'], \
