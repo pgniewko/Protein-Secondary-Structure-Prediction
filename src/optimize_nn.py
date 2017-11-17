@@ -32,9 +32,10 @@ if __name__ == "__main__":
 
 #    sys.exit(1)
 # Set the parameters by cross-validation
-    parameters = [ {'activation':['relu','tanh'],\
-    'solver':['lbfgs','adam'], \
-    'hidden_layer_sizes':[(100,),(50,50),(50,25,3)] } ]
+    parameters = [ {'activation':['logistic','relu','tanh'],\
+    'solver':['lbfgs','sgd','adam'], \
+    'learning_rate':['constant','adaptive'],\
+    'hidden_layer_sizes':[(100,),(50,50),(50,25,3),(25,11,5)] } ]
 
 
 # Split the dataset in two equal parts
