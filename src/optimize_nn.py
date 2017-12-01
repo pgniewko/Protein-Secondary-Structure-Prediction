@@ -20,12 +20,17 @@ from sklearn.metrics import classification_report
 
 from sklearn.model_selection import cross_val_score
 
+from utils import svd_pca, cross_decomp
+
 if __name__ == "__main__":
 
 # Read the data
 
     X = np.loadtxt(sys.argv[1])
     Y = np.loadtxt(sys.argv[2])
+
+#    X = cross_decomp(X, Y, 12)
+    X = svd_pca(X, 50)
 
     clf = MLPClassifier(activation='logistic',solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(25,11,3))
     scores = cross_val_score(clf, X, Y, cv=5, scoring='accuracy')

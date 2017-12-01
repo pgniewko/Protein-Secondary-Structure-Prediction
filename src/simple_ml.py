@@ -28,6 +28,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedKFold
 
+from utils import svd_pca, cross_decomp
 
 def plot_ROC_for_clf(clf, X, Y, cv_fold=5):
     """
@@ -117,6 +118,8 @@ if __name__ == "__main__":
     X = np.loadtxt(sys.argv[1])
     Y = np.loadtxt(sys.argv[2])
 
+#    X = cross_decomp(X, Y, 12)
+    X = svd_pca(X, 10)
 
     ###  (Random) Baseline
     clf = DummyClassifier(strategy="stratified")
